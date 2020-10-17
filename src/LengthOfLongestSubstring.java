@@ -1,4 +1,5 @@
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 3. 无重复字符的最长子串
@@ -24,15 +25,43 @@ import java.util.HashSet;
 public class LengthOfLongestSubstring {
 
     public static void main(String[] args){
+        String s="abcabcbb";
+        System.out.println(lengthOfLongestSubstring1(s));
+//        System.out.println(lengthOfLongestSubstring());
+    }
+    //滑动窗口解法
+    public static int lengthOfLongestSubstring1(String s) {
+        Set<Character> ooc=new HashSet<Character>();
+        int n=s.length();
 
+        int max=0,rk=-1;//右指针，初始值为-1,相当于在我们字符串的左边界的左侧，还没有开始移动
+        for (int i=0;i<n;i++){
+            if (i!=0){
+                //左指针向右移动一格，移除一个字符
+                ooc.remove(s.charAt(i-1));
+            }
+            while (rk+1<n&&!ooc.contains(s.charAt(rk+1))){
+                ooc.add(s.charAt(rk+1));
+                rk++;
+            }
+            max=Math.max(max,rk-i+1);
+        }
+        return max;
     }
 
-    public int lengthOfLongestSubstring(String s) {
+
+    /**
+     * 代码正确但是超出时间限制（寻找时间小的解法）
+     * 通过测试用例986 / 987 个
+     * @param s
+     * @return
+     */
+    public static int lengthOfLongestSubstring(String s) {
         int max=0,cmax=0;
         String cs="";
         for(int i=0;i<s.length();i++){
-            for(int j=i+1;j<s.length();j++){
-                cs=s.substring(i,j+1);
+            for(int j=i+1;j<=s.length();j++){
+                cs=s.substring(i,j);
                 cmax=isSubstring(cs);
                 if(cmax>max){
                     max=isSubstring(cs);
@@ -43,9 +72,6 @@ public class LengthOfLongestSubstring {
     }
 
     public static int isSubstring(String s){
-        if(s.equals("")){
-            return 0;
-        }
         HashSet hashSet=new HashSet();
         boolean isSubstring=true;
         hashSet.add(s.charAt(0));
